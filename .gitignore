@@ -1,0 +1,15 @@
+logs/*
+!.gitkeep
+node_modules/
+bower_components/
+tmp
+.DS_Store
+.idea
+.env
+.directory
+*.sqlite
+*.sqlite-journal
+cert*
+data
+*.kate-swp
+

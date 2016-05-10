@@ -17,9 +17,14 @@ Quoting from the requirements page:
 
 ## Notes
 
-Despite the "don't use skelletons/generators" in the requirements, the specific questions of the interviewer about AngularJS and the listing of BetIt tools in the challenge description make me really wanting to make a project with AngularJS and all of the suggested tools, specially testing tools.
+Despite the "don't use skelletons/generators" in the requirements, 
+the specific questions of the interviewer about AngularJS and the listing 
+of BetIt tools in the challenge description make me really wanting to make 
+a project with AngularJS and all of the suggested tools, specially the testing ones.
+
+In the end, it took me a little bit more than expected.
 
 ## Contact
 
-[LinkedIn]: https://linkedin.com/in/daniel-martínez-contador-867b0269
-[github]: https://github.com/danielearning/addressbook
+[LinkedIn](https://linkedin.com/in/daniel-martínez-contador-867b0269)
+[github](https://github.com/danielearning/addressbook)

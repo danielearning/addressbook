@@ -1,7 +1,0 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-"use strict";function createDemoEntries(e,o){e.localStorage.democreated||o.save({id:0,email:"danielmc@coit.es",firstname:"Daniel",lastname:"Martínez Contador",countrycode:"ES"})&&o.save({id:1,email:"yeahyeahyeah@gmail.com",firstname:"Fuensanta",lastname:"von Spanie",countrycode:"NL"})&&o.save({id:2,email:"luis.alfonso@gmail.com",firstname:"Luis Alfonso",lastname:"de la Vega Balrog Bison de Todos los Santos",countrycode:"AR"})&&o.save({id:3,email:"j.doe@example.com",firstname:"John",lastname:"Doe",countrycode:"US"})&&(e.localStorage.democreated=!0)}var _module=angular.module("addressBookDemo",["addressBookServices"]);_module.controller("AddressGlobalCtl",["$scope","$window","AddressBook",function(e,o,a){e.emptyDb=function(){a.clearDb()},e.resetDb=function(){e.emptyDb(),delete o.localStorage.democreated,createDemoEntries(o,a)}}]),_module.run(["$window","AddressBook",createDemoEntries]);
-
-},{}]},{},[1])
-
-
-//# sourceMappingURL=AddressBookDemo.js.map

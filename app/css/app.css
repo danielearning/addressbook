@@ -1,0 +1,71 @@
+/* app css stylesheet */
+
+.onlyedit {
+  display: none !important;
+}
+.edit .onlyedit {
+  display: unset !important;
+}
+.onlynew {
+  display: none !important;
+}
+.new .onlynew {
+  display: unset !important;
+}
+.onlydetail {
+  display: none !important;
+}
+.detail .onlydetail {
+  display: unset !important;
+}
+.onlydelete {
+  display: none !important;
+}
+.delete .onlydelete {
+  display: unset !important;
+}
+
+.largetext {
+  font-size: 150%;
+}
+
+#entrylist {
+  margin: 1em 0;
+}
+
+#entrylist .theader {
+  display: none;
+}
+
+#entrylist.tableview .theader {
+  display: table-row;
+  font-weight: bold;
+}
+
+#entrylist.tableview {
+  display: table;
+  border: black solid thin;
+  padding: 0;
+}
+
+#entrylist.tableview li {
+  display: table-row;
+  border: #ccc solid thin;
+  padding: 0.5em 0;
+}
+
+#entrylist li .entrycontrols {
+  display: block;
+}
+
+#entrylist.tableview li .entryname , 
+#entrylist.tableview li .entryemail , 
+#entrylist.tableview li .entrycountry ,
+#entrylist.tableview li .entrycontrols {
+  display: table-cell;
+  padding: 0 0.5em;
+  border: #ccc solid thin;
+}
+.edit #entrylist.tableview li .entrycontrols {
+  display: table-cell !important;
+}

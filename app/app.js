@@ -3,15 +3,17 @@
 // Declare app level module which depends on views, and components
 angular.module('addressBookApp', [
   'ngRoute',
+  'ngAnimate',
   'addressBookUtils',
   'addressBookServices',
   'addressBookDemo',
-  'addressBookControllers'
+  'addressBookControllers',
+  'addressBookAnimations'
 ])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.
   when('/about', {
-    templateUrl: 'about.html',
+    templateUrl: 'views/about.html',
     controller: 'AddressGlobalCtl'
   }).
   when('/entries', {

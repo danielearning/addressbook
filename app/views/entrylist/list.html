@@ -29,7 +29,7 @@
     <div class="entrycountry">Country</div>
     <div class="entrycontrols onlyedit">Controls</div>
   </li>
-  <li ng-repeat="entry in entries | filter:query | orderBy:orderBy" data-entryid="{{entry.id}}">
+  <li ng-repeat="entry in entries | filter:query | orderBy:orderBy" data-entryid="{{entry.id}}" class="entryrow">
     <div class="entryname"><a href="#/entries/{{entry.id}}"><span class="firstname">{{entry.firstname}}</span> <span class="lastname">{{entry.lastname}}</span></a></div>
     <div class="entryemail"><a href="mailto:{{entry.email}}">{{entry.email}}</a></div>
     <div class="entrycountry"><img ng-src="{{entry.countrycode | countryFlag}}" alt="Flag of {{entry.countrycode | countryName}}" /> {{entry.countrycode | countryName}}</div>

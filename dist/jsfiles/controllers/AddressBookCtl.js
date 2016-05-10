@@ -1,7 +1,88 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-"use strict";function createListController(e){return["$scope","AddressBook",function(t,o){t.entries=o.query(),t.orderBy="lastname",t.view="listview",e.edit?(t.view="tableview",t.listViewActive="",t.tableViewActive="active",t.edit="edit"):(t.view="listview",t.listViewActive="active",t.tableViewActive="",t.edit=""),t.setListView=function(){t.view="listview",t.listViewActive="active",t.tableViewActive=""},t.setTableView=function(){t.view="tableview",t.listViewActive="",t.tableViewActive="active"},t.sort=function(e){console.log(e),t.orderBy=e}}]}function createEditController(e){return["$scope","$window","$routeParams","countryNameFilter","AddressBook",function(t,o,r,i,n){t.mode=e.mode,"new"===e.mode?t.entry={}:t.entry=n.get({id:r.entryId},function(e){t.countryname=_typeof("function"===i)&&e?i(e.countrycode):"",o&&"function"==typeof o.onEditView&&o.onEditView(t)}),t.saveEntry=function(){t.validationError="",n.save(t.entry,function(e){e?o&&(o.location="#/entries/"+e.id):t.validationError=n.validate(t.entry).err})},t.deleteEntry=function(){n["delete"](t.entry)},o&&"function"==typeof o.onEditView&&o.onEditView(t)}]}var _typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol?"symbol":typeof e},_controllers=angular.module("addressBookControllers",[]);_controllers.controller("AddressListCtl",createListController({edit:!1})),_controllers.controller("AddressListEditCtl",createListController({edit:!0})),_controllers.controller("AddressNewCtl",createEditController({mode:"new"})),_controllers.controller("AddressEditCtl",createEditController({mode:"edit"})),_controllers.controller("AddressDetailCtl",createEditController({mode:"detail"})),_controllers.controller("AddressDeleteCtl",createEditController({mode:"delete"}));
+'use strict';
 
-},{}]},{},[1])
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
+var _controllers = angular.module('addressBookControllers', []);
 
-//# sourceMappingURL=AddressBookCtl.js.map
+function createListController(params) {
+  return ['$scope', 'AddressBook', function ($scope, AddressBook) {
+    $scope.entries = AddressBook.query();
+    $scope.orderBy = 'lastname';
+    $scope.view = 'listview'; // || 'tableview';
+
+    if (params.edit) {
+      $scope.view = 'tableview';
+      $scope.listViewActive = ''; // || '';
+      $scope.tableViewActive = 'active'; // || 'active';
+      $scope.edit = 'edit';
+    } else {
+      $scope.view = 'listview';
+      $scope.listViewActive = 'active'; // || '';
+      $scope.tableViewActive = ''; // || 'active';
+      $scope.edit = '';
+    }
+
+    $scope.setListView = function () {
+      $scope.view = 'listview';
+      $scope.listViewActive = 'active';
+      $scope.tableViewActive = '';
+    };
+    $scope.setTableView = function () {
+      $scope.view = 'tableview';
+      $scope.listViewActive = '';
+      $scope.tableViewActive = 'active';
+    };
+
+    $scope.sort = function (prop) {
+      console.log(prop);
+      $scope.orderBy = prop;
+    };
+  }];
+};
+
+function createEditController(params) {
+  return ['$scope', '$window', '$routeParams', 'countryNameFilter', 'AddressBook', function ($scope, $window, $routeParams, $filter, AddressBook) {
+    $scope.mode = params.mode;
+    //console.log(arguments);
+    if (params.mode === 'new') {
+      $scope.entry = {};
+    } else {
+      $scope.entry = AddressBook.get({ id: $routeParams.entryId }, function (entry) {
+        if (!entry) {
+          $window.location = '#/error404';
+          return;
+        }
+        $scope.countryname = _typeof($filter === 'function') && entry ? $filter(entry.countrycode) : '';
+        if ($window && typeof $window.onEditView === 'function') {
+          $window.onEditView($scope);
+        }
+      });
+    }
+    $scope.saveEntry = function () {
+      $scope.validationError = '';
+      AddressBook.save($scope.entry, function (saved) {
+        if (!saved) {
+          $scope.validationError = AddressBook.validate($scope.entry).err;
+        } else {
+          if ($window) {
+            $window.location = '#/entries/' + saved.id;
+          }
+        }
+      });
+    };
+    $scope.deleteEntry = function () {
+      AddressBook.delete($scope.entry);
+    };
+    if ($window && typeof $window.onEditView === 'function') {
+      $window.onEditView($scope);
+    }
+  }];
+};
+
+_controllers.controller('AddressListCtl', createListController({ edit: false }));
+_controllers.controller('AddressListEditCtl', createListController({ edit: true }));
+
+_controllers.controller('AddressNewCtl', createEditController({ mode: 'new' }));
+_controllers.controller('AddressEditCtl', createEditController({ mode: 'edit' }));
+_controllers.controller('AddressDetailCtl', createEditController({ mode: 'detail' }));
+_controllers.controller('AddressDeleteCtl', createEditController({ mode: 'delete' }));

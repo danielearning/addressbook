@@ -40,6 +40,9 @@ angular.module('addressBookApp', [
     templateUrl: 'views/edit/view.html',
     controller: 'AddressDeleteCtl'
   }).
+  when('/error404', {
+    template: '<h1>404 Not found :(</h1>'
+  }).
   otherwise({redirectTo: '/entries'});
 }])
 .directive('ngUpdateHidden',function() {

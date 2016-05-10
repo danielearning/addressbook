@@ -68,7 +68,7 @@ var watch = false;
 gulp.task('browserify', function(done) {
 
   var src = './dist/jsfiles',
-      dest = './dist/jsfiles';
+      dest = './dist2';
 
   var options = {
     // watch mode
@@ -123,12 +123,12 @@ gulp.task('watchify', function(done) {
 gulp.task('concatjs', function() {
   return gulp.src(
     [
-      'dist/jsfiles/services/Utils.js',
-      'dist/jsfiles/services/AddressBook.js',
-      'dist/jsfiles/services/AddressBookDemo.js',
-      'dist/jsfiles/controllers/AddressBookCtl.js',
-      'dist/jsfiles/app.js',
-      'dist/jsfiles/js/**/*.js'
+      'dist2/services/Utils.js',
+      'dist2/services/AddressBook.js',
+      'dist2/services/AddressBookDemo.js',
+      'dist2/controllers/AddressBookCtl.js',
+      'dist2/app.js',
+      'dist2/js/**/*.js'
     ])
     .pipe(concat('all.js'))
     .pipe(gulp.dest('dist/'));

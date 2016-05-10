@@ -1,7 +1,202 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-"use strict";var service=angular.module("addressBookServices",["addressBookUtils"]);service.factory("AddressBook",["$window","EmailValidator","CountryValidator","Cypher",function(e,r,a,t){function n(){e.localStorage&&e.localStorage.addressBookEntries||(e.localStorage||(e.localStorage={}),o({}))}function i(){var r=t&&t.available()?t.decrypt:function(e){return e};return JSON.parse(r(e.localStorage.addressBookEntries))}function o(r){var a=t&&t.available()?t.encrypt:function(e){return e};e.localStorage.addressBookEntries=a(JSON.stringify(r))}function d(e){return e&&e.firstname&&e.lastname&&e.countrycode&&e.email?r&&!r.validate(e.email)?{err:"Required email has bad format"}:a&&!a.validate(e.countrycode)?{err:"Required country cannot be recognized"}:!0:{err:"Required field is not present"}}function u(e,r){var a=Date.now();if(r[a]){for(var t=1;r[a+t];)t++;a+=t}return a}function c(e,r){var a="string"==typeof e.id?e.id:e.id.id;n();var t=i(),d=t[a];return delete t[a],o(t),r&&r(d),d}return{get:function(e,r){n();var a=i()[e.id];return a&&(a.id=e.id),r&&r(a),a},validate:function(e){return d(e)},save:function l(e,r){if(n(),1!=d(e))return r&&r(!1),!1;var a=i(),t="undefined"!=typeof e.id?e.id:u(e,a),l={firstname:""+e.firstname,lastname:""+e.lastname,email:""+e.email,countrycode:""+e.countrycode};return a[t]=l,o(a),l.id=t,r&&r(l),l},query:function(e){n();var r=[],a=i();for(var t in a){var o=a[t];o.id=t,r.push(o)}return e&&e(r),r},remove:c,"delete":c,clearDb:function(){o({})}}}]);
+'use strict';
 
-},{}]},{},[1])
+/** AddressBook storage service.
+ * 
+ * Mimics $resource interface.
+ * FIXME Should return promises instead of being synchronous.
+ * @see https://docs.angularjs.org/api/ngResource/service/$resource
+ * 
+ * */
 
+var service = angular.module('addressBookServices', ['addressBookUtils']);
 
-//# sourceMappingURL=AddressBook.js.map
+service.factory('AddressBook', ['$window', // Since localStorage belongs to window.
+'EmailValidator', // May use an external REST service.
+'CountryValidator', // May check against a list of country codes. That list shouldn't be here.
+'Cypher', // Store encrypted data. Cool!
+function ($window, $emailvalidator, $countryvalidator, $cypher) {
+
+  /** Makes sure there is something at window.localStorage, so that the app may work.
+   * UI should warn about not having window.localStorage
+   * */
+  function enforcePhoneBook() {
+    if (!$window.localStorage || !$window.localStorage.addressBookEntries) {
+      if (!$window.localStorage) {
+        $window.localStorage = {};
+      }
+      saveAddressBook({});
+    }
+  };
+
+  /** Loads AddressBook from localStorage
+   * FIXME This full save/load will scale poorly with multi-MB agendas.
+   * */
+  function loadAddressBook() {
+    //console.log('load book');
+    var decrypt = $cypher && $cypher.available() ? $cypher.decrypt : function (x) {
+      return x;
+    };
+    return JSON.parse(decrypt($window.localStorage.addressBookEntries));
+  };
+
+  /** Saves AddressBook to localStorage
+   * FIXME This full save/load will scale poorly with multi-MB agendas.
+   * */
+  function saveAddressBook(book) {
+    var encrypt = $cypher && $cypher.available() ? $cypher.encrypt : function (x) {
+      return x;
+    };
+    $window.localStorage.addressBookEntries = encrypt(JSON.stringify(book));
+  };
+
+  /** Runs entry validations.
+   * 
+   * */
+  function validateEntry(entry) {
+    if (!entry || !entry.firstname || !entry.lastname || !entry.countrycode || !entry.email) {
+      //console.log('validateEntry', 'empty data');
+      return { err: 'Required field is not present' };
+    }
+    if ($emailvalidator && !$emailvalidator.validate(entry.email)) {
+      //console.log('validateEntry', 'bad email');
+      return { err: 'Required email has bad format' };
+    }
+    if ($countryvalidator && !$countryvalidator.validate(entry.countrycode)) {
+      //console.log('validateEntry', 'bad country');
+      return { err: 'Required country cannot be recognized' };;
+    }
+    return true;
+  };
+
+  /** Generates an unique id for the data.
+   * If we used a database back-end, it would make the ids for us.
+   * 
+   * */
+  function makeId(entry, book) {
+    var id = Date.now();
+    if (book[id]) {
+      var n = 1;
+      while (book[id + n]) {
+        n++;
+      }
+      id += n;
+    }
+    return id;
+    /* Alternate id maker:
+     * @returns email+john-doe-1@example.com
+     * It's so wasteful, but it's cool that one can directly email to it.
+    var baseslug = entry.email.replace('@', 
+      '+' + 
+      (entry.firstname.toLowerCase() + '-' + entry.lastname.toLowerCase())
+      .replace(/[^\w]/, '-') + 
+      '@');
+    if (book[baseslug]) {
+      baseslug = baseslug + '-';
+      var n = 1;
+      while (book[baseslug + n]) {
+        n++;
+      }
+      return baseslug + n;
+    }
+    return baseslug;
+    */
+  };
+
+  /** Delete
+   * Declared apart, since it is used several times.
+   * @param params.id Either id is the id, or id is an entry extended with its own id.
+   * @returns Deleted instance
+   * */
+  function _remove(params, callback) {
+    // The delete
+    var _id = typeof params.id === 'string' ? params.id : params.id.id;
+    enforcePhoneBook();
+    var book = loadAddressBook();
+    var toBeDeleted = book[_id];
+    delete book[_id];
+    saveAddressBook(book);
+    if (callback) {
+      callback(toBeDeleted);
+    }
+    return toBeDeleted;
+  };
+
+  return {
+    get: function get(params, callback) {
+      // Basic entry get.
+      enforcePhoneBook();
+      var e = loadAddressBook()[params.id];
+      if (e) {
+        e.id = params.id;
+      }
+      if (callback) {
+        callback(e);
+      }
+      return e;
+    },
+
+    validate: function validate(entry) {
+      // Validate only, like in Sequelize
+      return validateEntry(entry);
+    },
+
+    save: function save(entry, callback) {
+      // Validate and save entry
+      enforcePhoneBook();
+
+      if (validateEntry(entry) != true) {
+        if (callback) {
+          callback(false);
+        }
+        return false;
+      }
+
+      // Modify if id is present; create new if otherwise.
+      var book = loadAddressBook();
+      var id = typeof entry.id !== 'undefined' ? entry.id : makeId(entry, book);
+
+      // Save only the strictly necessary
+      var save = {
+        firstname: '' + entry.firstname,
+        lastname: '' + entry.lastname,
+        email: '' + entry.email,
+        countrycode: '' + entry.countrycode
+      };
+
+      // Save sanitized entry and return it
+      book[id] = save;
+      saveAddressBook(book);
+      save.id = id;
+      if (callback) {
+        callback(save);
+      }
+      return save;
+    },
+
+    query: function query(callback) {
+      // A get all
+      enforcePhoneBook();
+      var r = [];
+      var book = loadAddressBook();
+      for (var i in book) {
+        var rr = book[i];
+        rr.id = i;
+        r.push(rr);
+      }
+      if (callback) {
+        callback(r);
+      }
+      return r;
+    },
+
+    remove: _remove, // DELETE
+    delete: _remove, // DELETE
+
+    /** Empty.
+     * Deletes entries
+     * */
+    clearDb: function clearDb() {
+      saveAddressBook({});
+    }
+  };
+}]);

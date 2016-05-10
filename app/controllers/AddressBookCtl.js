@@ -56,6 +56,10 @@ function createEditController(params) {
         $scope.entry = {};
       } else {
         $scope.entry = AddressBook.get({id: $routeParams.entryId}, function(entry) {
+          if (!entry) {
+            $window.location = '#/error404';
+            return;
+          }
           $scope.countryname = typeof($filter === 'function') && entry ? $filter(entry.countrycode) : '';
           if ($window && typeof($window.onEditView) === 'function') {
             $window.onEditView($scope);

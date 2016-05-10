@@ -1,7 +1,60 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-"use strict";function createDemoEntries(e,o){e.localStorage.democreated||o.save({id:0,email:"danielmc@coit.es",firstname:"Daniel",lastname:"Martínez Contador",countrycode:"ES"})&&o.save({id:1,email:"yeahyeahyeah@gmail.com",firstname:"Fuensanta",lastname:"von Spanie",countrycode:"NL"})&&o.save({id:2,email:"luis.alfonso@gmail.com",firstname:"Luis Alfonso",lastname:"de la Vega Balrog Bison de Todos los Santos",countrycode:"AR"})&&o.save({id:3,email:"j.doe@example.com",firstname:"John",lastname:"Doe",countrycode:"US"})&&(e.localStorage.democreated=!0)}var _module=angular.module("addressBookDemo",["addressBookServices"]);_module.controller("AddressGlobalCtl",["$scope","$window","AddressBook",function(e,o,a){e.emptyDb=function(){a.clearDb()},e.resetDb=function(){e.emptyDb(),delete o.localStorage.democreated,createDemoEntries(o,a)}}]),_module.run(["$window","AddressBook",createDemoEntries]);
+'use strict';
 
-},{}]},{},[1])
+/** Create demo entries.
+ * Only the first time or on demand.
+ * @cond window.localStorage.democreated If false or not present, create demo entry
+ * */
 
+var _module = angular.module('addressBookDemo', ['addressBookServices']);
 
-//# sourceMappingURL=AddressBookDemo.js.map
+/** Creates demo entries only if no democreated
+ * 
+ * */
+function createDemoEntries($window, AddressBook) {
+  if (!$window.localStorage.democreated) {
+    if (AddressBook.save({
+      id: 0,
+      email: 'danielmc@coit.es',
+      firstname: 'Daniel',
+      lastname: 'Martínez Contador',
+      countrycode: 'ES'
+    }) && AddressBook.save({
+      id: 1,
+      email: 'yeahyeahyeah@gmail.com',
+      firstname: 'Fuensanta',
+      lastname: 'von Spanie',
+      countrycode: 'NL'
+    }) && AddressBook.save({
+      id: 2,
+      email: 'luis.alfonso@gmail.com',
+      firstname: 'Luis Alfonso',
+      lastname: 'de la Vega Balrog Bison de Todos los Santos',
+      countrycode: 'AR'
+    }) && AddressBook.save({
+      id: 3,
+      email: 'j.doe@example.com',
+      firstname: 'John',
+      lastname: 'Doe',
+      countrycode: 'US'
+    })) {
+      $window.localStorage.democreated = true;
+    }
+  }
+  return;
+};
+
+_module.controller('AddressGlobalCtl', ['$scope', '$window', // Since localStorage belongs to window.
+'AddressBook', function ($scope, $window, AddressBook) {
+  $scope.emptyDb = function () {
+    AddressBook.clearDb();
+  };
+  $scope.resetDb = function () {
+    $scope.emptyDb();
+    delete $window.localStorage.democreated;
+    createDemoEntries($window, AddressBook);
+  };
+}]);
+
+_module.run(['$window', // Since localStorage belongs to window.
+'AddressBook', // Access to AddressBook
+createDemoEntries]);

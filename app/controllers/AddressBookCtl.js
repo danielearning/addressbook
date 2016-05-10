@@ -51,13 +51,15 @@ function createEditController(params) {
     'AddressBook',
     function($scope, $window, $routeParams, $filter, AddressBook) {
       $scope.mode = params.mode;
-      //console.log($filter);
+      //console.log(arguments);
       if (params.mode === 'new') {
         $scope.entry = {};
       } else {
         $scope.entry = AddressBook.get({id: $routeParams.entryId}, function(entry) {
-          $scope.countryname = $filter(entry.countrycode);
-          $window.onEditView($scope);
+          $scope.countryname = typeof($filter === 'function') && entry ? $filter(entry.countrycode) : '';
+          if ($window && typeof($window.onEditView) === 'function') {
+            $window.onEditView($scope);
+          }
         });
       }
       $scope.saveEntry = function() {
@@ -66,14 +68,18 @@ function createEditController(params) {
           if (!saved) {
             $scope.validationError = AddressBook.validate($scope.entry).err;
           } else {
-            $window.location = '#/entries/' + saved.id;
+            if ($window) {
+              $window.location = '#/entries/' + saved.id;
+            }
           }
         });
       }
       $scope.deleteEntry = function() {
         AddressBook.delete($scope.entry);
       }
-      $window.onEditView($scope);
+      if ($window && typeof($window.onEditView) === 'function') {
+        $window.onEditView($scope);
+      }
     }];
  };
 

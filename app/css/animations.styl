@@ -9,6 +9,13 @@ transition() {
   transition: arguments;
 }
 
+animation() {
+  -webkit-animation: arguments;
+  -moz-animation: arguments;
+  -o-animation: arguments;
+  transition: arguments;
+}
+
 .entryrow.ng-enter,
 .entryrow.ng-leave,
 .entryrow.ng-move {
@@ -46,3 +53,60 @@ transition() {
   padding-top: 0;
   padding-bottom: 0;
 }
+
+.view-container {
+  position: relative;
+  background: white;
+}
+.view-container .view-frame {
+  /* This is required to avoid flicker when changing from position relative to absolute.
+   * 20px is the margin-top of the next heading present in all views
+   * */
+  padding-top: 20px;
+}
+
+.view-frame.ng-enter, .view-frame.ng-leave {
+  background: white;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.view-frame.ng-enter {
+  animation: 0.5s fade-in;
+  z-index: 100;
+}
+
+.view-frame.ng-leave {
+  animation: 0.5s fade-out;
+  z-index: 99;
+}
+
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@-moz-keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@-webkit-keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@-moz-keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@-webkit-keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+

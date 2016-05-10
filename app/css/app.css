@@ -69,3 +69,8 @@
 .edit #entrylist.tableview li .entrycontrols {
   display: table-cell !important;
 }
+
+#entrylist.tableview li .entryemail {
+  word-wrap: break-word;
+}
+
